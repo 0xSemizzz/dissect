@@ -1,0 +1,10 @@
+# Dissect - Phase 1 Dependencies
+
+# Telegram Bot
+python-telegram-bot==21.0
+
+# Groq AI (fast, generous free tier)
+groq>=0.4.0
+
+# Environment variables
+python-dotenv==1.0.0
