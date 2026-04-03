@@ -96,17 +96,28 @@ def _format_enrichment(enrichment: dict) -> str:
             malicious = vt.get("malicious", "unknown")
             total = vt.get("total_engines", "unknown")
             lines.append(f"  - {item['url']}")
-            lines.append(f"    VirusTotal: {malicious}/{total} engines flagged as malicious")
+            if malicious != "unknown":
+                lines.append(f"    VirusTotal: {malicious}/{total} engines flagged as malicious")
+            else:
+                lines.append(f"    VirusTotal: Not found or unavailable")
             if item.get("urlscan_verdict"):
                 lines.append(f"    URLScan verdict: {item['urlscan_verdict']}")
 
     if enrichment.get("ips"):
         lines.append("IP addresses found in script:")
         for item in enrichment["ips"]:
+            ipinfo = item.get("ipinfo", {})
             lines.append(f"  - {item['ip']}")
-            lines.append(f"    Location: {item.get('country', 'unknown')}, Org: {item.get('org', 'unknown')}")
-            if item.get("is_tor"):
-                lines.append(f"    WARNING: Known Tor exit node")
+            if ipinfo.get("status") == "bogon":
+                lines.append(f"    Note: {ipinfo.get('note', 'Private/reserved IP')}")
+            else:
+                country = ipinfo.get("country", "unknown")
+                org = ipinfo.get("org", "unknown")
+                lines.append(f"    Location: {country}, Org: {org}")
+                if ipinfo.get("is_tor"):
+                    lines.append(f"    WARNING: Known Tor exit node")
+                if ipinfo.get("is_suspicious_hosting"):
+                    lines.append(f"    WARNING: {ipinfo.get('suspicion_reason', 'Suspicious hosting')}")
             if item.get("shodan_ports"):
                 lines.append(f"    Open ports: {item['shodan_ports']}")
 
@@ -114,10 +125,19 @@ def _format_enrichment(enrichment: dict) -> str:
         lines.append("File hashes found in script:")
         for item in enrichment["hashes"]:
             lines.append(f"  - {item['hash']}")
-            if item.get("malwarebazaar_family"):
-                lines.append(f"    MalwareBazaar: Known malware — {item['malwarebazaar_family']}")
-            else:
+            mb = item.get("malwarebazaar", {})
+            vt = item.get("virustotal", {})
+
+            if mb.get("status") == "found":
+                family = mb.get("malware_family", "Unknown")
+                lines.append(f"    MalwareBazaar: Known malware — {family}")
+            elif mb.get("status") == "not_found":
                 lines.append(f"    MalwareBazaar: Not found in database")
+
+            if vt.get("malicious") is not None:
+                malicious = vt.get("malicious", 0)
+                total = vt.get("total_engines", 0)
+                lines.append(f"    VirusTotal: {malicious}/{total} engines flagged as malicious")
 
     return "\n".join(lines) if lines else "No external indicators found in script."
 

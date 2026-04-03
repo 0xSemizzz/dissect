@@ -25,13 +25,25 @@ GROQ_API_KEY = get_required_env("GROQ_API_KEY")
 TURSO_DATABASE_URL = os.getenv("TURSO_DATABASE_URL")
 TURSO_AUTH_TOKEN = os.getenv("TURSO_AUTH_TOKEN")
 
+# Enrichment API keys (Phase 2+)
+VIRUSTOTAL_API_KEY = os.getenv("VIRUSTOTAL_API_KEY")
+MALWAREBAZAAR_API_KEY = os.getenv("MALWAREBAZAAR_API_KEY")
+IPINFO_API_KEY = os.getenv("IPINFO_API_KEY")
+
 # Feature flags
 USE_TURSO = bool(TURSO_DATABASE_URL and TURSO_AUTH_TOKEN)
 
-# Rate limiting (v1: in-memory if Turso not enabled)
-MAX_SUBMISSIONS_PER_USER_PER_DAY = 5
-MAX_SUBMISSIONS_PER_HASH_PER_DAY = 10
-MAX_SUBMISSIONS_PER_USER_PER_HOUR = 20
+# Abuse detection thresholds (Phase 2+)
+MAX_SUBMISSIONS_PER_HASH_PER_DAY = 10  # Detect evasion testing
+MAX_SUBMISSIONS_PER_USER_PER_HOUR = 20  # Detect automated abuse
+
+# Analysis cache TTL (7 days)
+ANALYSIS_CACHE_TTL_HOURS = 168
+
+# Enrichment cache TTLs
+VT_CACHE_TTL_HOURS = 24
+MB_CACHE_TTL_HOURS = 24
+IPINFO_CACHE_TTL_HOURS = 168
 
 # Analysis limits
 MAX_SCRIPT_SIZE_KB = 50

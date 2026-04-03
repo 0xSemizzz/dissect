@@ -11,7 +11,7 @@ from typing import Dict, List, Any
 PATTERNS = {
     # URLs: http, https, ftp
     "url": re.compile(
-        r'(https?|ftp)://[^\s<>"{}|\\^`\[\]]+',
+        r'(?:https?|ftp)://[^\s<>"{}|\\^`\[\]]+',
         re.IGNORECASE
     ),
     # IPv4 addresses
