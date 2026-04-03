@@ -1,26 +1,26 @@
-<<<<<<< HEAD
+![Dissect Logo](dissect_logo.png)
+
+---
+
 # Dissect
 
-A Telegram bot that analyzes suspicious scripts and explains them in plain English. Built for non-technical users who need to know if a script is safe to run.
+A Telegram bot that analyzes suspicious scripts and tells you in plain English whether they're safe to run. Paste a PowerShell command, drop a `.sh` file, get a verdict back in seconds — no security background required.
 
-## What It Does
-
-Dissect takes a suspicious script and returns a clear, structured analysis:
-
-- **What the script does** — step-by-step in plain English
-- **Suspicious behaviors** — flagged with severity levels
-- **Obfuscation detection** — identifies hidden or disguised code
-- **External threat intelligence** — cross-references URLs, IPs, and hashes against VirusTotal, MalwareBazaar, and IPInfo
-- **Risk level** — LOW, MEDIUM, HIGH, or CRITICAL
-- **Clear verdict** — RUN IT SAFELY, INVESTIGATE FURTHER, or DO NOT RUN THIS
-
-Identical scripts are cached so repeat analyses return instantly without re-querying external APIs.
+---
 
 ## Who It's For
 
-- IT helpdesk workers receiving suspicious files
-- Small business owners without security expertise
-- Anyone who got a weird script in their email and wants to know if it's dangerous
+Not security researchers. They have Ghidra. Dissect is for the IT person who got a `.ps1` attachment from an unknown sender, or the business owner whose employee forwarded "something weird." The output is written for someone who doesn't know what `ExecutionPolicy Bypass` means and shouldn't have to.
+
+---
+
+## What It Does
+
+You submit a script. Dissect extracts every URL, IP address, and file hash, checks them against VirusTotal, MalwareBazaar, and IPInfo, runs the whole thing through an AI model trained to explain code to non-technical people, and returns a structured report: what the script does step by step, which behaviors are suspicious, whether the code is trying to hide itself, and a verdict — **RUN IT SAFELY**, **INVESTIGATE FURTHER**, or **DO NOT RUN THIS**.
+
+Identical scripts are cached by hash, so the same script submitted a hundred times costs one analysis. The rest come back instantly.
+
+---
 
 ## How It Works
 
@@ -28,7 +28,7 @@ Identical scripts are cached so repeat analyses return instantly without re-quer
 Script submitted
        │
        ▼
-Check cache ──► Cache hit? ──► Return cached result (instant)
+Check analysis cache ──► Hit? ──► Return cached result (instant)
        │
        ▼
 Extract URLs, IPs, hashes (regex)
@@ -46,92 +46,25 @@ Query external APIs in parallel:
 AI analysis (Groq) — combines script content + enrichment data
        │
        ▼
-Risk scoring + verdict
-       │
-       ▼
-Cache result + respond
+Risk scoring + verdict → cache result → respond
 ```
 
-Enrichment API failures are non-fatal — if VirusTotal or MalwareBazaar are unavailable, the analysis continues with whatever data is available.
-
-## Quick Start
-
-### 1. Get API Keys
-
-**Groq API Key** (free, no credit card):
-1. Go to https://console.groq.com/keys
-2. Click "Create API Key"
-3. Copy the key
-
-**Telegram Bot Token**:
-1. Open Telegram, search for `@BotFather`
-2. Send `/newbot`
-3. Follow the prompts
-4. Copy the token
-
-**Enrichment APIs** (optional — bot works without them):
-- **VirusTotal** — https://www.virustotal.com/gui/my-apikey
-- **MalwareBazaar** — https://bazaar.abuse.ch/api/#key
-- **IPInfo** — https://ipinfo.io/account
-
-### 2. Setup
-
-```bash
-cd dissect
-
-# Install dependencies (Python 3.11+ required)
-pip install -r requirements.txt
-
-# Create .env file
-cp .env.example .env
-
-# Edit .env and add your keys
-```
-
-### 3. Run the Bot
-
-```bash
-python main.py
-```
-
-### 4. Use It
-
-Open your bot in Telegram and:
-- Send `/start` to see the welcome message
-- Paste a script directly or send a file (`.ps1`, `.bat`, `.sh`, `.py`, `.vbs`)
-- Wait for the analysis
-
-## Example Analysis
-=======
-![Alt text](dissect_logo.png)
-
----
-
-# Dissect
-
-A Telegram bot that analyzes suspicious scripts and tells you in plain English whether they're safe to run. Paste a PowerShell command, drop a `.sh` file, get a verdict back in seconds — no security background required.
-
----
-
-## Who It's For
-
-Not security researchers. They have Ghidra. Dissect is for the IT person who got a `.ps1` attachment from an unknown sender, or the business owner whose employee forwarded "something weird." The output is written for someone who doesn't know what `ExecutionPolicy Bypass` means and shouldn't have to.
-
----
-
-## What It Analyzes
-
-PowerShell, Bash, Batch, Python, and VBScript. For each submission it returns a step-by-step breakdown of what the script does, any suspicious behaviors it found, whether the script is trying to hide itself through obfuscation, and a plain-English verdict: **RUN IT SAFELY**, **INVESTIGATE FURTHER**, or **DO NOT RUN THIS**.
+External API failures are non-fatal. If VirusTotal is rate-limited or MalwareBazaar is down, the analysis continues with whatever data is available.
 
 ---
 
 ## Setup
 
-You need two things before running anything: a Groq API key and a Telegram bot token. Both are free.
+Two keys are required: a Groq API key and a Telegram bot token. Both are free. Enrichment API keys (VirusTotal, MalwareBazaar, IPInfo) are optional — the bot works without them, just with less context.
 
-**Groq key** — go to [console.groq.com/keys](https://console.groq.com/keys), create a key, copy it. It starts with `gsk_`.
+**Groq key** — [console.groq.com/keys](https://console.groq.com/keys), create a key, copy it.
 
 **Telegram token** — open Telegram, find `@BotFather`, send `/newbot`, follow the prompts.
+
+**Enrichment keys** (optional):
+- VirusTotal — [virustotal.com/gui/my-apikey](https://www.virustotal.com/gui/my-apikey)
+- MalwareBazaar — [bazaar.abuse.ch/api/#key](https://bazaar.abuse.ch/api/#key)
+- IPInfo — [ipinfo.io/account](https://ipinfo.io/account)
 
 Then:
 
@@ -143,12 +76,11 @@ cp .env.example .env
 python main.py
 ```
 
-Open your bot in Telegram, send `/start`, paste a script. Analysis takes 10–15 seconds.
+Open your bot in Telegram, send `/start`, paste a script or send a file (`.ps1`, `.bat`, `.sh`, `.py`, `.vbs`). Analysis takes 10–15 seconds.
 
 ---
 
 ## Example
->>>>>>> 5b6a7c21d0fc9a68c559545bdf32b4abbe002666
 
 **Input:**
 ```powershell
@@ -165,41 +97,6 @@ Risk Level: CRITICAL
 Confidence: ✓✓✓
 
 Summary:
-<<<<<<< HEAD
-This script downloads a file from a specific website and runs it on your computer.
-The file is saved in a temporary location and given a name that looks like a
-legitimate Windows process.
-
-What it does:
-• The script sets the URL of the file to be downloaded and the path where it will
-  be saved
-• It downloads the file using a .NET WebClient object
-• It then executes the downloaded file as a new process
-
-⚠️ Suspicious behaviors:
-• [CRITICAL] Downloading and running an executable from an unknown website
-• [HIGH] Mimicking a legitimate Windows system process name
-
-Verdict:
-DO NOT RUN THIS. This script poses a significant risk to your computer and data.
-```
-
-## Testing
-
-Run the full test suite to verify all components:
-
-```bash
-# Make sure GROQ_API_KEY is set in .env
-python test.py
-```
-
-This tests:
-- Static extraction and obfuscation detection
-- AI analysis on 4 script types (benign, malicious, obfuscated, ambiguous)
-- Database caching, submission logging, and abuse detection
-- Enrichment API integrations (VirusTotal, MalwareBazaar, IPInfo)
-- Full pipeline with cache miss → cache hit flow
-=======
 This script downloads a file from the internet and runs it on your
 computer. It saves the file with a name designed to look like a
 legitimate Windows process.
@@ -218,81 +115,21 @@ DO NOT RUN THIS. This script has the hallmarks of a malware dropper.
 ```
 
 ---
->>>>>>> 5b6a7c21d0fc9a68c559545bdf32b4abbe002666
+
+## Testing
+
+```bash
+python test.py
+```
+
+Runs four scripts through the full pipeline: a benign Windows Update checker (expects LOW), a malware dropper (expects CRITICAL), a base64-obfuscated payload (expects CRITICAL), and a legitimate Python installer (expects MEDIUM). Also tests the database layer, enrichment APIs, and the cache miss → cache hit flow.
+
+---
 
 ## Project Structure
 
 ```
 dissect/
-<<<<<<< HEAD
-├── main.py                  # Bot entry point
-├── config.py                # Configuration loader
-├── requirements.txt         # Dependencies
-│
-├── ai/
-│   ├── groq.py              # Groq API client
-│   ├── prompts.py           # AI prompts (versioned)
-│   └── parser.py            # JSON parsing + validation
-│
-├── core/
-│   ├── analyzer.py          # Analysis pipeline orchestration
-│   ├── extractor.py         # URL/IP/hash extraction
-│   └── obfuscation.py       # Obfuscation detection
-│
-├── enrichment/
-│   ├── virustotal.py        # VirusTotal URL & hash reputation
-│   ├── malwarebazaar.py     # MalwareBazaar malware family lookup
-│   └── ipinfo.py            # IPInfo geolocation & ASN
-│
-├── db/
-│   ├── models.py            # SQLite schema & connection
-│   └── queries.py           # Async queries for cache & submissions
-│
-├── bot/
-│   ├── handlers.py          # Telegram message handlers
-│   └── formatter.py         # Message formatting
-│
-└── test.py                  # Full test suite
-```
-
-## Technology Stack
-
-- **Runtime:** Python 3.11+
-- **Bot Framework:** python-telegram-bot v21
-- **AI:** Groq API (Llama 3.3 70B)
-- **Database:** SQLite (local) — upgradeable to Turso for cloud deployment
-- **HTTP:** aiohttp for async enrichment API calls
-
-## Rate Limits & Caching
-
-| Service | Limit | Strategy |
-|---|---|---|
-| Groq API | 30 req/min, 14,400/day | Cache by script hash (7 days) |
-| VirusTotal | 500 req/day, 4/min | Cache by URL/hash (24 hours) |
-| MalwareBazaar | Unlimited | Cache by hash (24 hours) |
-| IPInfo | 50k/month | Cache by IP (7 days) |
-
-The same script submitted 100 times costs one AI call and one set of enrichment lookups — the rest are served from cache.
-
-## Security Notes
-
-- Scripts are sent to Groq API for analysis (cloud-based)
-- No raw scripts are stored — only SHA256 hashes and analysis results
-- Abuse detection flags users who submit the same hash repeatedly or at high velocity
-- Enrichment API keys are optional — the bot works without them, just with less context
-
-## Disclaimer
-
-Dissect is an automated analysis tool. While it uses advanced AI and threat intelligence, it can make mistakes. Always verify critical findings with a security professional before running unknown scripts.
-
-## License
-
-MIT
-
-## Author
-
-Built as a cybersecurity analysis assistant for non-technical users.
-=======
 ├── main.py              # Entry point
 ├── config.py            # Loads keys from .env
 ├── ai/
@@ -303,32 +140,44 @@ Built as a cybersecurity analysis assistant for non-technical users.
 │   ├── analyzer.py      # Pipeline orchestration
 │   ├── extractor.py     # URL, IP, hash extraction
 │   └── obfuscation.py   # Obfuscation pattern detection
+├── enrichment/
+│   ├── virustotal.py    # VirusTotal URL & hash reputation
+│   ├── malwarebazaar.py # MalwareBazaar malware family lookup
+│   └── ipinfo.py        # IPInfo geolocation & ASN
+├── db/
+│   ├── models.py        # SQLite schema & connection
+│   └── queries.py       # Async queries for cache & submissions
 ├── bot/
 │   ├── handlers.py      # Telegram handlers
 │   └── formatter.py     # Output formatting
-└── tests/
-    └── test_phase1.py   # Test suite
+└── test.py              # Full test suite
 ```
 
 ---
 
-## Testing Without Telegram
+## Rate Limits & Caching
 
-```bash
-python test_phase1.py
-```
+| Service | Free Limit | Cache Strategy |
+|---|---|---|
+| Groq | 30 req/min, 14,400/day | Script hash, 7 days |
+| VirusTotal | 500 req/day, 4/min | URL/hash, 24 hours |
+| MalwareBazaar | Unlimited | Hash, 24 hours |
+| IPInfo | 50k/month | IP, 7 days |
 
-Runs four scripts through the pipeline: a benign Windows Update checker, a classic malware dropper, a base64-obfuscated payload, and a legitimate Python installer. Each has an expected risk level. If they all pass, the core analysis works.
+The same script submitted 100 times costs one AI call and one set of enrichment lookups. The rest are served from cache.
 
 ---
 
-## Rate Limits
+## Security Notes
 
-Groq gives you 30 requests per minute and 14,400 per day on the free tier. Submissions are cached by script hash, so the same script never costs two API calls. Per-user rate limiting (5 analyses per 24 hours) comes in Phase 2.
+Scripts are sent to Groq API for analysis. No raw scripts are stored — only SHA256 hashes and analysis results. Abuse detection flags users who submit the same hash repeatedly or at high velocity.
 
 ---
 
 ## Disclaimer
 
 Dissect is an automated tool. It can be wrong, especially on heavily obfuscated or novel malware. If something matters, get a second opinion from a real security professional.
->>>>>>> 5b6a7c21d0fc9a68c559545bdf32b4abbe002666
+
+---
+
+MIT License. Built as a cybersecurity analysis assistant for non-technical users.
